@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fun Math Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Basic Reset & Font */
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0; /* Ensure no default body margin */
+      padding: 0; /* Ensure no default body padding */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Ensure body takes full viewport height */
+      background: linear-gradient(135deg, #f0f8ff, #e0ffff); /* Light blue gradient background */
+      color: #333;
+      overflow: hidden; /* Prevent body scrollbars if content overflows viewport */
+    }
+
+    /* Game Container */
+    .game-container {
+      background-color: #ffffff; /* Keep background for the main container */
+      border-radius: 0;
+      box-shadow: none;
+      padding: 0; /* Remove padding here to allow children to fill */
+      width: 100vw; /* Fill viewport width */
+      height: 100vh; /* Fill viewport height */
+      text-align: center;
+      box-sizing: border-box;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Center content vertically */
+      align-items: center; /* Center content horizontally */
+      overflow-y: auto; /* Allow scrolling within the container if content is too tall */
+    }
+
+    /* Headings */
+    h1 {
+      color: #4a90e2; /* Bright blue */
+      margin-bottom: 30px; /* Increased margin */
+      font-size: 2.8em; /* Slightly larger */
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #555;
+      font-size: 1.8em; /* Larger for settings header */
+      margin-bottom: 20px;
+    }
+
+    /* Sections: Apply flex properties to make them fill space */
+    .game-section {
+      margin: 20px; /* Add some margin around the section itself */
+      padding: 25px; /* Internal padding for content within the section */
+      border-radius: 20px;
+      background-color: #f7faff;
+      border: 2px solid #d0e0f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Center content inside sections */
+      align-items: center;
+      box-sizing: border-box;
+      width: calc(100% - 40px); /* Fill width minus margin */
+      max-width: 600px; /* Keep a max-width for readability on very wide screens */
+      flex-grow: 1; /* Allow this section to grow and fill available space within game-container */
+    }
+
+    /* Settings specific adjustments */
+    .settings label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: bold;
+      color: #555;
+      font-size: 1.2em;
+    }
+
+    .settings input[type="number"] {
+      width: 200px;
+      max-width: calc(100% - 40px);
+      padding: 15px;
+      margin: 0 8px 20px;
+      border: 3px solid #a8d5ff;
+      border-radius: 15px;
+      font-size: 1.2em;
+      text-align: center;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .settings input[type="number"]:focus {
+      border-color: #2193b0;
+      box-shadow: 0 0 10px rgba(33, 147, 176, 0.3);
+      outline: none;
+    }
+
+    .settings .option-group {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .settings .option-group label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-weight: normal;
+      font-size: 1.2em;
+      color: #333;
+      padding: 8px 12px;
+      border-radius: 10px;
+      transition: background-color 0.2s ease;
+    }
+
+    .settings .option-group label:hover {
+      background-color: #e0f7fa;
+    }
+
+    .settings .option-group input[type="radio"],
+    .settings .option-group input[type="checkbox"] {
+      margin-right: 10px;
+      transform: scale(1.5);
+      accent-color: #2193b0;
+    }
+
+    .settings select {
+      width: auto;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 2px solid #a8d5ff;
+      border-radius: 10px;
+      font-size: 1.1em;
+      text-align: center;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+    .settings select:focus {
+      border-color: #2193b0;
+      box-shadow: 0 0 10px rgba(33, 147, 176, 0.3);
+      outline: none;
+    }
+
+
+    /* Buttons */
+    button {
+      background: linear-gradient(180deg, #6dd5ed, #2193b0);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 18px 35px;
+      font-size: 1.5em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(33, 147, 176, 0.4);
+      margin-top: 15px;
+      display: inline-block;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    button:hover {
+      background: linear-gradient(180deg, #2193b0, #6dd5ed);
+      box-shadow: 0 10px 25px rgba(33, 147, 176, 0.5);
+      transform: translateY(-3px) scale(1.02);
+    }
+
+    button:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 4px 12px rgba(33, 147, 176, 0.3);
+    }
+
+    /* Specific button styles for Reset and Hint */
+    #reset-game-btn {
+      background: linear-gradient(180deg, #ff7e5f, #feb47b);
+      box-shadow: 0 8px 20px rgba(255, 126, 95, 0.4);
+    }
+
+    #reset-game-btn:hover {
+      background: linear-gradient(180deg, #feb47b, #ff7e5f);
+      box-shadow: 0 10px 25px rgba(255, 126, 95, 0.5);
+    }
+
+    #hint-btn {
+      background: linear-gradient(180deg, #ffd700, #ffa500);
+      box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+      margin-right: 10px;
+    }
+
+    #hint-btn:hover {
+      background: linear-gradient(180deg, #ffa500, #ffd700);
+      box-shadow: 0 10px 25px rgba(255, 215, 0, 0.5);
+    }
+
+
+    /* Game Area */
+    .game-area {
+      display: none; /* Hidden by default */
+    }
+
+    .question {
+      font-size: 4em;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 30px;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.15);
+    }
+
+    .answer-input {
+      width: 180px;
+      padding: 20px;
+      border: 4px solid #6dd5ed;
+      border-radius: 15px;
+      font-size: 2.5em;
+      text-align: center;
+      margin-bottom: 25px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .answer-input:focus {
+      border-color: #2193b0;
+      box-shadow: 0 0 15px rgba(33, 147, 176, 0.4);
+      outline: none;
+    }
+
+    .feedback {
+      margin-top: 20px;
+      font-size: 1.8em;
+      font-weight: bold;
+      min-height: 40px;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .feedback.correct {
+      color: #28a745;
+    }
+
+    .feedback.incorrect {
+      color: #dc3545;
+    }
+
+    .score {
+      font-size: 2.2em;
+      font-weight: bold;
+      color: #4a90e2;
+      margin-top: 25px;
+    }
+
+    #hint-display {
+      margin-top: 20px;
+      min-height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    #breakdown-hint-text {
+      font-size: 1.5em;
+      color: #666;
+      font-style: italic;
+      display: none;
+    }
+
+    .hint-visual-box {
+      background-color: #e0f7fa;
+      border: 2px dashed #a8d5ff;
+      border-radius: 15px;
+      padding: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.5em;
+      line-height: 1;
+      min-height: 80px;
+      min-width: 100px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      flex: 1;
+      max-width: 48%;
+    }
+
+    .hint-operator-symbol {
+      font-size: 3em;
+      font-weight: bold;
+      color: #4a90e2;
+      margin: 0 10px;
+    }
+
+    /* New: Styles for clickable visual items and strikethrough */
+    .visual-item {
+      cursor: pointer;
+      transition: text-decoration 0.2s ease, opacity 0.2s ease;
+      user-select: none; /* Prevent text selection on double click */
+      display: inline-block; /* Allows margin/padding and transforms */
+      margin: 2px; /* Small margin between items */
+    }
+
+    .visual-item.strikethrough {
+      text-decoration: line-through;
+      opacity: 0.6;
+      color: #888; /* Dim the color slightly */
+    }
+
+    #take-away-message {
+      font-size: 1.2em;
+      color: #555;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .game-container {
+        padding: 10px; /* Reduced padding for very small screens */
+      }
+      .game-section {
+        margin: 10px; /* Smaller margin around the section */
+        padding: 15px; /* Reduced padding inside the section */
+        width: calc(100% - 20px); /* Adjust width for margin */
+      }
+      h1 {
+        font-size: 2em; /* Smaller font for main title */
+        margin-bottom: 15px;
+      }
+      h2 {
+        font-size: 1.3em; /* Smaller font for section titles */
+        margin-bottom: 15px;
+      }
+      .settings label {
+        font-size: 1em;
+        margin-bottom: 8px;
+      }
+      .settings input[type="number"] {
+        width: calc(100% - 30px); /* Responsive width for number input */
+        margin: 0 auto 10px;
+        padding: 10px;
+        font-size: 1em;
+      }
+      .settings .option-group {
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .settings .option-group label {
+        font-size: 0.9em;
+        padding: 5px 8px;
+      }
+      .settings .option-group input[type="radio"],
+      .settings .option-group input[type="checkbox"] {
+        transform: scale(1.1);
+      }
+      .settings select {
+        width: calc(100% - 16px);
+        font-size: 0.9em;
+        padding: 8px;
+      }
+      .question {
+        font-size: 2.5em; /* Smaller question font */
+        margin-bottom: 20px;
+      }
+      .answer-input {
+        width: calc(100% - 30px); /* Responsive width for answer input */
+        padding: 12px;
+        font-size: 1.8em;
+        margin-bottom: 15px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 1.1em;
+        margin-top: 8px;
+      }
+      .score, .feedback {
+        font-size: 1.2em;
+        margin-top: 10px;
+      }
+      #hint-display {
+        flex-direction: column; /* Stack boxes vertically on small screens */
+        gap: 8px;
+      }
+      #breakdown-hint-text {
+        font-size: 1.1em;
+      }
+      .hint-visual-box {
+        font-size: 1.8em; /* Adjust emoji size for small screens */
+        max-width: 100%; /* Full width for stacking */
+        min-height: 60px;
+        padding: 10px;
+      }
+      .hint-operator-symbol {
+        font-size: 2em;
+        margin: 3px 0;
+      }
+      #take-away-message {
+        font-size: 1em;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .game-container {
+        padding: 5px; /* Minimal padding on very small screens */
+      }
+      .game-section {
+        margin: 5px; /* Minimal margin */
+        padding: 10px; /* Minimal padding */
+        width: calc(100% - 10px);
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+      h2 {
+        font-size: 1.2em;
+      }
+      button {
+        font-size: 1em;
+        padding: 8px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="game-container">
+  <h1>🔢 Fun Math Game! ➕➖</h1>
+
+  <!-- Settings Section -->
+  <div class="game-section settings" id="settings-section">
+    <h2>Game Settings</h2>
+
+    <label for="max-num">Largest Number:</label>
+    <input type="number" id="max-num" value="10" min="1" max="100">
+
+    <label>Choose Operation:</label>
+    <div class="option-group">
+      <!-- Changed to checkboxes for multi-selection -->
+      <label><input type="checkbox" id="op-plus" checked> Addition (+)</label>
+      <label><input type="checkbox" id="op-minus"> Subtraction (-)</label>
+    </div>
+
+    <!-- Removed: Display Mode Setting -->
+
+    <!-- Hint Settings remain as radio buttons for levels -->
+    <label>Allow Hints:</label>
+    <div class="option-group">
+      <label><input type="radio" name="hintLevel" value="none" checked> No Hints</label>
+      <label><input type="radio" name="hintLevel" value="breakdown"> Breakdown Hint</label>
+      <label><input type="radio" name="hintLevel" value="visual"> Visualization Hint</label>
+    </div>
+
+    <div id="visual-object-setting" style="display: none;">
+      <label for="visual-object">Visualization Object:</label>
+      <select id="visual-object">
+        <option value="🍬">Candies 🍬</option>
+        <option value="🍎">Apples 🍎</option>
+        <option value="🧸">Teddy Bears 🧸</option>
+        <option value="🚗">Toy Cars 🚗</option>
+        <option value="🎈">Balloons 🎈</option>
+        <option value="🦆">Ducks 🦆</option>
+        <option value="⭐">Stars ⭐</option>
+        <option value="🦕">Dinosaurs 🦕</option>
+        <option value="🐞">Ladybugs 🐞</option>
+        <option value="🍦">Ice Cream Cones 🍦</option>
+      </select>
+    </div>
+
+    <button id="start-game-btn">Start Game!</button>
+  </div>
+
+  <!-- Game Area Section -->
+  <div class="game-section game-area" id="game-area-section">
+    <p class="question" id="math-question">What is 5 + 3?</p>
+    <input type="number" id="answer-input" class="answer-input" placeholder="Your Answer">
+    <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+      <button id="hint-btn" style="display: none;">💡 Get Hint</button>
+      <button id="submit-answer-btn">Submit Answer</button>
+    </div>
+    <p class="feedback" id="feedback-message"></p>
+    <p class="score">Score: <span id="current-score">0</span></p>
+    <!-- Updated hint-display structure -->
+    <div id="hint-display">
+      <span id="breakdown-hint-text" style="display: none;"></span>
+      <div id="hint-num1-box" class="hint-visual-box" style="display: none;"></div>
+      <span id="hint-operator" class="hint-operator-symbol" style="display: none;"></span>
+      <div id="hint-num2-box" class="hint-visual-box" style="display: none;"></div>
+      <p id="take-away-message" style="display: none;"></p> <!-- New message for subtraction hint -->
+    </div>
+    <button id="next-question-btn" style="display: none;">Next Question &#10140;</button>
+    <button id="reset-game-btn" style="background: linear-gradient(180deg, #ff7e5f, #feb47b);">&#8635; Reset Game</button>
+  </div>
+</div>
+
+<script>
+  // Get DOM elements
+  const settingsSection = document.getElementById('settings-section');
+  const gameAreaSection = document.getElementById('game-area-section');
+  const maxNumInput = document.getElementById('max-num');
+  const opPlusCheckbox = document.getElementById('op-plus');
+  const opMinusCheckbox = document.getElementById('op-minus');
+  const hintLevelRadios = document.querySelectorAll('input[name="hintLevel"]');
+  const visualObjectSelect = document.getElementById('visual-object');
+  const visualObjectSettingDiv = document.getElementById('visual-object-setting');
+  const startGameBtn = document.getElementById('start-game-btn');
+  const mathQuestion = document.getElementById('math-question');
+  const answerInput = document.getElementById('answer-input');
+  const submitAnswerBtn = document.getElementById('submit-answer-btn');
+  const feedbackMessage = document.getElementById('feedback-message');
+  const currentScoreSpan = document.getElementById('current-score');
+  const nextQuestionBtn = document.getElementById('next-question-btn');
+  const resetGameBtn = document.getElementById('reset-game-btn');
+  const hintBtn = document.getElementById('hint-btn');
+  const hintDisplay = document.getElementById('hint-display');
+  const breakdownHintText = document.getElementById('breakdown-hint-text');
+  const hintNum1Box = document.getElementById('hint-num1-box');
+  const hintNum2Box = document.getElementById('hint-num2-box');
+  const hintOperator = document.getElementById('hint-operator');
+  const takeAwayMessage = document.getElementById('take-away-message'); // New
+
+  // Game state variables
+  let minNumber = 1; // Fixed at 1
+  let maxNumber = 10;
+  let selectedOperation = 'plus';
+  let selectedHintLevel = 'none';
+  let score = 0;
+  let correctAnswer = 0;
+  let questionCount = 0;
+  const maxQuestions = 10;
+  let itemsStruckThrough = 0; // New: To track items removed in visual subtraction hint
+  let targetItemsToStrike = 0; // New: To store num2 for visual subtraction hint
+
+  /**
+   * Clears and hides all hint display elements.
+   */
+  function clearHintDisplay() {
+    // Clear content and hide breakdown hint text
+    breakdownHintText.textContent = '';
+    breakdownHintText.style.display = 'none';
+
+    // Clear content of visual hint boxes and operator
+    hintNum1Box.textContent = '';
+    hintNum2Box.textContent = '';
+    hintOperator.textContent = '';
+    // Hide visual hint boxes and operator
+    hintNum1Box.style.display = 'none';
+    hintNum2Box.style.display = 'none';
+    hintOperator.style.display = 'none';
+    takeAwayMessage.textContent = ''; // Clear take away message
+    takeAwayMessage.style.display = 'none'; // Hide take away message
+  }
+
+  /**
+   * Generates a random integer between min (inclusive) and max (inclusive).
+   * @param {number} min - The minimum number.
+   * @param {number} max - The maximum number.
+   * @returns {number} A random integer.
+   */
+  function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  /**
+   * Generates a new math question based on selected settings.
+   */
+  function generateQuestion() {
+    // Check if max questions reached
+    if (questionCount >= maxQuestions) {
+      endGame();
+      return;
+    }
+
+    feedbackMessage.textContent = '';
+    feedbackMessage.className = 'feedback';
+    answerInput.value = '';
+    answerInput.focus();
+    submitAnswerBtn.style.display = 'inline-block';
+    nextQuestionBtn.style.display = 'none';
+    clearHintDisplay(); // Clear and hide all hint elements
+
+    // Show/hide hint button based on selected hint level
+    if (selectedHintLevel !== 'none') {
+      hintBtn.style.display = 'inline-block';
+    } else {
+      hintBtn.style.display = 'none';
+    }
+
+    let num1 = getRandomNumber(minNumber, maxNumber);
+    let num2 = getRandomNumber(minNumber, maxNumber);
+    let operationSymbol = '';
+
+    // Determine operation type based on selectedOperation
+    if (selectedOperation === 'plus') {
+      operationSymbol = '+';
+      correctAnswer = num1 + num2;
+    } else if (selectedOperation === 'minus') {
+      // Ensure subtraction results in a non-negative number
+      if (num1 < num2) {
+        [num1, num2] = [num2, num1]; // Swap to ensure num1 >= num2
+      }
+      // Re-generate if result is outside range
+      while (num1 - num2 < minNumber || num1 - num2 > maxNumber) {
+        num1 = getRandomNumber(minNumber, maxNumber);
+        num2 = getRandomNumber(minNumber, maxNumber);
+        if (num1 < num2) {
+          [num1, num2] = [num2, num1];
+        }
+      }
+      operationSymbol = '-';
+      correctAnswer = num1 - num2;
+    } else { // 'both'
+      if (Math.random() < 0.5) { // 50% chance for addition
+        operationSymbol = '+';
+        correctAnswer = num1 + num2;
+      } else { // 50% chance for subtraction
+        if (num1 < num2) {
+          [num1, num2] = [num2, num1];
+        }
+        while (num1 - num2 < minNumber || num1 - num2 > maxNumber) {
+          num1 = getRandomNumber(minNumber, maxNumber);
+          num2 = getRandomNumber(minNumber, maxNumber);
+          if (num1 < num2) {
+            [num1, num2] = [num2, num1];
+          }
+        }
+        operationSymbol = '-';
+        correctAnswer = num1 - num2;
+      }
+    }
+
+    mathQuestion.textContent = `${num1} ${operationSymbol} ${num2} = ?`;
+    questionCount++;
+  }
+
+  /**
+   * Checks the user's answer and provides feedback.
+   */
+  function checkAnswer() {
+    const userAnswer = parseInt(answerInput.value, 10);
+
+    if (isNaN(userAnswer)) {
+      feedbackMessage.textContent = 'Please enter a number!';
+      feedbackMessage.className = 'feedback incorrect';
+      return;
+    }
+
+    if (userAnswer === correctAnswer) {
+      feedbackMessage.textContent = '🎉 Correct! Great Job! 🎉';
+      feedbackMessage.className = 'feedback correct';
+      score += 10;
+    } else {
+      feedbackMessage.textContent = `❌ It was ${correctAnswer} ❌`;
+      feedbackMessage.className = 'feedback incorrect';
+    }
+    currentScoreSpan.textContent = score;
+
+    submitAnswerBtn.style.display = 'none';
+    hintBtn.style.display = 'none';
+    clearHintDisplay();
+
+    if (questionCount >= maxQuestions) {
+      endGame();
+    } else {
+      nextQuestionBtn.style.display = 'inline-block';
+    }
+  }
+
+  /**
+   * Displays a hint based on the selected hint level.
+   */
+  function showHint() {
+    const [num1Str, operationSymbol, num2Str] = mathQuestion.textContent.split(' ');
+    const num1 = parseInt(num1Str);
+    const num2 = parseInt(num2Str);
+
+    clearHintDisplay(); // Always clear all hint elements first
+
+    if (selectedHintLevel === 'breakdown') {
+      let hintText = '';
+      if (operationSymbol === '+') {
+        // Strategy 1: Make num1 a multiple of 10
+        let neededToMakeNum1Ten = 10 - (num1 % 10);
+        if (num1 % 10 === 0) neededToMakeNum1Ten = 0;
+
+        if (neededToMakeNum1Ten > 0 && num2 >= neededToMakeNum1Ten) {
+          hintText = `Try: ${num1} + ${neededToMakeNum1Ten} + ${num2 - neededToMakeNum1Ten}`;
+        }
+        // Strategy 2: Make num2 a multiple of 10 (if num1 wasn't suitable)
+        else {
+          let neededToMakeNum2Ten = 10 - (num2 % 10);
+          if (num2 % 10 === 0) neededToMakeNum2Ten = 0;
+
+          if (neededToMakeNum2Ten > 0 && num1 >= neededToMakeNum2Ten) {
+            hintText = `Try: ${num2} + ${neededToMakeNum2Ten} + ${num1 - neededToMakeNum2Ten}`;
+          }
+          // Strategy 3: Break down to 5s if larger numbers
+          else if (num1 > 5 || num2 > 5) {
+            if (num1 > 5 && num2 > 5) {
+              hintText = `Think: ${num1} + 5 + ${num2 - 5}`;
+            } else if (num1 > 5) {
+              hintText = `Think: 5 + ${num1 - 5} + ${num2}`;
+            } else { // num2 > 5
+              hintText = `Think: ${num1} + 5 + ${num2 - 5}`;
+            }
+          }
+          // Fallback
+          else {
+            hintText = "Try counting them all!";
+          }
+        }
+      } else if (operationSymbol === '-') {
+        // Strategy 1: Subtract to a multiple of 10 from num1
+        let neededToReachTen = num1 % 10;
+        if (num1 % 10 === 0 && num1 > 0) neededToReachTen = 10;
+
+        if (neededToReachTen > 0 && num2 >= neededToReachTen && num1 >= 10) {
+          hintText = `Try: ${num1} - ${neededToReachTen} - ${num2 - neededToReachTen}`;
+        }
+        // Strategy 2: Break down num2 to 5s
+        else if (num2 > 5) {
+          hintText = `Think: ${num1} - 5 - ${(num2 - 5)}`;
+        }
+        // Fallback
+        else {
+          hintText = "Think about taking away!";
+        }
+      }
+      breakdownHintText.textContent = `Hint: ${hintText}`;
+      breakdownHintText.style.display = 'block';
+
+    } else if (selectedHintLevel === 'visual') {
+      const visualObject = visualObjectSelect.value;
+      hintNum1Box.style.display = 'flex';
+      hintOperator.style.display = 'block';
+      hintOperator.textContent = operationSymbol;
+
+      if (operationSymbol === '+') {
+        hintNum1Box.textContent = visualObject.repeat(num1);
+        hintNum2Box.textContent = visualObject.repeat(num2);
+        hintNum2Box.style.display = 'flex';
+      } else if (operationSymbol === '-') {
+        // For subtraction, populate num1Box with clickable items
+        hintNum1Box.innerHTML = ''; // Clear previous content
+        itemsStruckThrough = 0; // Reset counter
+        targetItemsToStrike = num2; // Set target for this question
+
+        for (let i = 0; i < num1; i++) {
+          const itemSpan = document.createElement('span');
+          itemSpan.textContent = visualObject;
+          itemSpan.classList.add('visual-item');
+          itemSpan.addEventListener('click', function() {
+            if (this.classList.contains('strikethrough')) {
+              // Allow "unstrikethrough" if user made a mistake and wants to undo
+              this.classList.remove('strikethrough');
+              itemsStruckThrough--;
+            } else if (itemsStruckThrough < targetItemsToStrike) {
+              // Only allow strikethrough if target not reached
+              this.classList.add('strikethrough');
+              itemsStruckThrough++;
+            }
+            updateTakeAwayMessage();
+          });
+          hintNum1Box.appendChild(itemSpan);
+        }
+        hintNum2Box.style.display = 'none'; // Hide num2 box for subtraction visual hint
+        updateTakeAwayMessage(); // Initial message
+        takeAwayMessage.style.display = 'block';
+      }
+    }
+  }
+
+  /**
+   * Updates the message showing how many items are left to take away.
+   */
+  function updateTakeAwayMessage() {
+    const remaining = targetItemsToStrike - itemsStruckThrough;
+    if (remaining > 0) {
+      takeAwayMessage.textContent = `Click ${remaining} more to take away!`;
+    } else {
+      takeAwayMessage.textContent = `You've taken away ${targetItemsToStrike} items!`;
+    }
+  }
+
+
+  /**
+   * Ends the game, displays final score, and hides next question button.
+   */
+  function endGame() {
+    mathQuestion.textContent = `Game Over! Your final score is ${score} points!`;
+    answerInput.style.display = 'none';
+    submitAnswerBtn.style.display = 'none';
+    nextQuestionBtn.style.display = 'none';
+    hintBtn.style.display = 'none';
+    feedbackMessage.textContent = 'Great effort! Click Reset Game to play again.';
+    feedbackMessage.className = 'feedback';
+    clearHintDisplay();
+  }
+
+  /**
+   * Starts the game, hiding settings and showing game area.
+   */
+  function startGame() {
+    // minNumber is now fixed at 1
+    maxNumber = parseInt(maxNumInput.value, 10);
+
+    // Determine selectedOperation based on checkboxes
+    const isPlusChecked = opPlusCheckbox.checked;
+    const isMinusChecked = opMinusCheckbox.checked;
+
+    if (isPlusChecked && isMinusChecked) {
+      selectedOperation = 'both';
+    } else if (isPlusChecked) {
+      selectedOperation = 'plus';
+    } else if (isMinusChecked) {
+      selectedOperation = 'minus';
+    } else {
+      // Default to 'plus' if neither is selected, or show a message
+      showCustomMessageBox('Please select at least one operation (Addition or Subtraction). Defaulting to Addition.');
+      opPlusCheckbox.checked = true; // Set addition as default
+      selectedOperation = 'plus';
+    }
+
+    selectedHintLevel = Array.from(hintLevelRadios).find(radio => radio.checked).value;
+
+    // Basic validation for number range (only maxNumber needs check now)
+    if (isNaN(maxNumber) || maxNumber < 1) {
+      showCustomMessageBox('Please enter a valid largest number (must be at least 1).');
+      return;
+    }
+    // Ensure minNumber (which is 1) is not greater than maxNumber
+    if (minNumber > maxNumber) { // This check is mostly for user input errors on maxNumber
+      showCustomMessageBox('Smallest number (1) cannot be greater than the largest number!');
+      return;
+    }
+
+    score = 0;
+    questionCount = 0;
+    currentScoreSpan.textContent = score;
+    settingsSection.style.display = 'none';
+    gameAreaSection.style.display = 'block';
+    answerInput.style.display = 'inline-block';
+    generateQuestion();
+  }
+
+  /**
+   * Resets the game to the settings screen.
+   */
+  function resetGame() {
+    gameAreaSection.style.display = 'none';
+    settingsSection.style.display = 'block';
+    score = 0;
+    questionCount = 0;
+    currentScoreSpan.textContent = score;
+    feedbackMessage.textContent = '';
+    feedbackMessage.className = 'feedback';
+    answerInput.value = '';
+    answerInput.style.display = 'inline-block';
+    submitAnswerBtn.style.display = 'inline-block';
+    nextQuestionBtn.style.display = 'none';
+    hintBtn.style.display = 'none';
+    clearHintDisplay();
+
+    mathQuestion.textContent = 'What is 5 + 3?';
+  }
+
+  /**
+   * Shows a custom message box (replaces alert()).
+   * @param {string} message - The message to display.
+   */
+  function showCustomMessageBox(message) {
+    const messageBox = document.createElement('div');
+    messageBox.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #fff;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                z-index: 1000;
+                font-size: 1.2em;
+                color: #333;
+                text-align: center;
+                max-width: 80%;
+                border: 2px solid #4a90e2;
+            `;
+    messageBox.innerHTML = `
+                <p>${message}</p>
+                <button style="margin-top: 20px; padding: 10px 20px; font-size: 1em; background: linear-gradient(180deg, #6dd5ed, #2193b0); color: white; border: none; border-radius: 10px; cursor: pointer;">OK</button>
+            `;
+    document.body.appendChild(messageBox);
+
+    messageBox.querySelector('button').addEventListener('click', () => {
+      document.body.removeChild(messageBox);
+    });
+  }
+
+  // Event Listeners
+  startGameBtn.addEventListener('click', startGame);
+  submitAnswerBtn.addEventListener('click', checkAnswer);
+  nextQuestionBtn.addEventListener('click', generateQuestion);
+  resetGameBtn.addEventListener('click', resetGame);
+  hintBtn.addEventListener('click', showHint);
+
+  // Event listener for hint level radio buttons to show/hide visual object dropdown
+  hintLevelRadios.forEach(radio => {
+    radio.addEventListener('change', updateVisualObjectSettingVisibility);
+  });
+
+  /**
+   * Updates the visibility of the visual object setting based on hint level.
+   * Simplified as display mode is no longer a factor.
+   */
+  function updateVisualObjectSettingVisibility() {
+    const currentHintLevel = Array.from(hintLevelRadios).find(radio => radio.checked).value;
+
+    if (currentHintLevel === 'visual') { // Only check hint level
+      visualObjectSettingDiv.style.display = 'block';
+    } else {
+      visualObjectSettingDiv.style.display = 'none';
+    }
+  }
+
+  // Allow pressing Enter key to submit answer
+  answerInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+      if (submitAnswerBtn.style.display !== 'none') {
+        checkAnswer();
+      } else if (nextQuestionBtn.style.display !== 'none') {
+        generateQuestion();
+      }
+    }
+  });
+
+  // Initial setup on load
+  window.onload = function() {
+    settingsSection.style.display = 'block';
+    gameAreaSection.style.display = 'none';
+    updateVisualObjectSettingVisibility(); // Set initial visibility
+  };
+
+</script>
+</body>
+</html>
