@@ -25,6 +25,8 @@ Welcome! This is a fun and interactive **Math Game** designed especially for fir
 2. **Double-click on `index.html`.**
    - It should automatically open in your web browser.
    - You’ll see the game start screen.
+  
+![Start Screen](Home.png)
 
 > 💡 If double-clicking doesn’t work, right-click on `index.html` and choose  
 > **"Open with" → "Google Chrome"** or another browser.
@@ -33,6 +35,7 @@ Welcome! This is a fun and interactive **Math Game** designed especially for fir
    - Follow the instructions on screen.
    - The game will ask fun math questions (like addition or subtraction), and give feedback with emojis or sounds.
 
+![Question Screen](in-game.png)
 ---
 
 ## 🔄 Troubleshooting
